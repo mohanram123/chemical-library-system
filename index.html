@@ -17,7 +17,7 @@
 </div>
 <main>
   <section class="summary"><div class="card"><span>Active Borrowers</span><strong id="borrowerCount">0</strong></div><div class="card"><span>Chemicals in Stock</span><strong id="stockCount">0</strong></div><div class="card"><span>Items Currently Borrowed</span><strong id="borrowedCount">0</strong></div></section>
-  <section class="table-wrap"><div class="table-title"><h2>Active Borrowings</h2><input class="search" id="search" placeholder="Search borrower or chemical" oninput="renderBorrows()"></div><table><thead><tr><th>IC No</th><th>Name</th><th>Section</th><th>Designation</th><th>Chemical</th><th>Quantity</th><th>Borrowing Date</th><th>Action</th></tr></thead><tbody id="borrowTable"></tbody></table></section>
+  <section class="table-wrap"><div class="table-title"><h2>Active Borrowings</h2><input class="search" id="search" placeholder="Search borrower or chemical"></div><table><thead><tr><th>IC No</th><th>Name</th><th>Section</th><th>Designation</th><th>Chemical</th><th>Quantity</th><th>Borrowing Date</th><th>Action</th></tr></thead><tbody id="borrowTable"></tbody></table></section>
 </main>
 
 <div class="modal-backdrop" id="borrowModal"><div class="modal"><div class="modal-header"><h3>Borrow Chemical</h3><button class="close" onclick="closeModal('borrowModal')">×</button></div><form id="borrowForm"><div class="modal-body"><div class="form-grid"><div class="field"><label>IC No *</label><input id="b_ic" required></div><div class="field"><label>Name *</label><input id="b_name" required></div><div class="field"><label>Section *</label><input id="b_section" required></div><div class="field"><label>Designation *</label><input id="b_designation" required></div><div class="field full"><label>Chemical *</label><select id="b_chemical" required></select></div><div class="field"><label>Quantity *</label><input id="b_quantity" type="number" min="1" value="1" required></div><div class="field"><label>Borrowing Date *</label><input id="b_date" type="date" required></div></div></div><div class="modal-footer"><button type="button" class="secondary" onclick="closeModal('borrowModal')">Cancel</button><button class="primary" type="submit">Record Borrowing</button></div></form></div></div>
@@ -60,7 +60,28 @@
 
   function refreshAll(){renderBorrows();renderChemicals();refreshChemicalOptions();refreshSummary()}
   function refreshSummary(){document.getElementById("borrowerCount").textContent=new Set(borrows.map(x=>x.icNo)).size;document.getElementById("stockCount").textContent=chemicals.reduce((n,x)=>n+(Number(x.quantity)||0),0);document.getElementById("borrowedCount").textContent=borrows.reduce((n,x)=>n+(Number(x.quantity)||0),0)}
-  function renderBorrows(){const q=document.getElementById("search").value.toLowerCase();const sorted=[...borrows].filter(x=>Object.values(x).join(" ").toLowerCase().includes(q)).sort((a,b)=>a.borrowingDate.localeCompare(b.borrowingDate));document.getElementById("borrowTable").innerHTML=sorted.length?sorted.map(x=>`<tr><td>${esc(x.icNo)}</td><td>${esc(x.name)}</td><td>${esc(x.section)}</td><td>${esc(x.designation)}</td><td>${esc(x.chemicalName)}</td><td><span class="badge">${x.quantity}</span></td><td>${x.borrowingDate}</td><td><button class="secondary" onclick="quickReturn('${x.id}')">Return</button></td></tr>`).join(""):`<tr><td colspan="8" class="empty">No active borrowings found</td></tr>`;refreshSummary()}
+  window.renderBorrows=renderBorrows;
+  document.getElementById("search").addEventListener("input", renderBorrows);
+
+  function renderBorrows(){
+    const terms=document.getElementById("search").value
+      .toLowerCase()
+      .normalize("NFKC")
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean);
+
+    const sorted=[...borrows].filter(x=>{
+      const searchable=[x.icNo,x.name,x.section,x.designation,x.chemicalName,x.quantity,x.borrowingDate]
+        .join(" ")
+        .toLowerCase()
+        .normalize("NFKC");
+      return terms.every(term=>searchable.includes(term));
+    }).sort((a,b)=>a.borrowingDate.localeCompare(b.borrowingDate));
+
+    document.getElementById("borrowTable").innerHTML=sorted.length?sorted.map(x=>`<tr><td>${esc(x.icNo)}</td><td>${esc(x.name)}</td><td>${esc(x.section)}</td><td>${esc(x.designation)}</td><td>${esc(x.chemicalName)}</td><td><span class="badge">${x.quantity}</span></td><td>${x.borrowingDate}</td><td><button class="secondary" onclick="quickReturn('${x.id}')">Return</button></td></tr>`).join(""):`<tr><td colspan="8" class="empty">No active borrowings found</td></tr>`;
+    refreshSummary();
+  }
   function refreshChemicalOptions(){const opts=chemicals.map(x=>`<option value="${x.id}">${esc(x.name)} (${esc(x.formula)}) — ${x.quantity} available</option>`).join("");document.getElementById("b_chemical").innerHTML=opts||"<option value='' disabled>No chemicals available</option>"}
   function renderChemicals(){document.getElementById("chemicalTable").innerHTML=chemicals.length?chemicals.map(x=>`<tr><td>${esc(x.name)}</td><td>${esc(x.formula)}</td><td>${esc(x.purchasedDate)}</td><td>${x.quantity}</td><td><button class="secondary" onclick="editChemical('${x.id}')">Edit</button> <button class="danger" onclick="deleteChemical('${x.id}')">Delete</button></td></tr>`).join(""):`<tr><td colspan="5" class="empty">No chemicals recorded</td></tr>`}
   window.openBorrow=()=>{document.getElementById("borrowModal").classList.add("open")};window.openReturn=()=>{populateReturnOptions();document.getElementById("returnModal").classList.add("open")};window.openAdmin=()=>{document.getElementById("adminModal").classList.add("open")};window.closeModal=id=>document.getElementById(id).classList.remove("open")
