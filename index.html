@@ -63,14 +63,17 @@
     const {collection,getDocs}=await import("https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js");
     const load=async n=> (await getDocs(collection(db,n))).docs.map(d=>({id:d.id,...d.data()}));
     chemicals=await load("chemicals");
-    if(chemicals.length===0) await seedImportedInventory();
+    await seedImportedInventory();
     personnel=await load("personnel");borrows=(await load("borrowingRecords")).filter(x=>x.active);returns=await load("returnRecords");
   }
 
   async function seedImportedInventory(){
     const names=["Silicon carbide","8-Hydroxyquinoline","Acrylonitrile","Alumina polishing powder","Alumina powder","Aluminium nitrate monohydrate","Aluminium powder","Aluminium turning","Ammonium carbonate","Ammonium chloride","Ammonium hydrogen phosphate","Antimony powder","Barium acetate","Barium chloride","Barium hydroxide","Boric acid","Certified viscosity standard","Chromium (III) chloride hexahydrate","Chromium metal","Chromium oxide","Cobalt (II) nitrate","Conducting silver paste","Copper sulphate pentahydrate","Cupric oxide","Ethyl cellulose","Ferric oxide","Ferrous chloride","HT ceramic adhesive","Iodine","Lead nitrate","Lead oxide","Lithium acetate","Lithium carbonate","Lithium hydroxide","Magnesium metal","Magnesium oxide","Magnesium wire","Mercuric chloride","Mercury (II) chloride","Nickel oxide","Niobium (V) oxide","Palladium nitrate","Palladium chloride","Pd powder","Phosphorus pentoxide","Pine oil","Potassium iodide","Potassium aluminium sulphate","Potassium bromide","Potassium chloride","Potassium hydroxide","Potassium iodate","Ruthenium oxide","Silica gel","Silica gel blue","Silver nitrate","Sodium acetate","Sodium bicarbonate","Sodium carbonate","Sodium chloride","Sodium hexametaphosphate","Sodium hydroxide","Sodium sulphate heptahydrate","Sodium tungstate","Strontium chloride","Thalocyanin","Ti metal","Tin (II) chloride","Tin (IV) chloride","Tin (IV) oxide","Titanium (IV) isopropoxide","Titanium dioxide","Titanium tetrachloride","Trisodium tetrahydrate","Tungsten (VI) chloride","Tungsten (VI) oxide","Tungsten sulphide","Urea","Zinc metal","Zinc oxide","Zinc sulphate","Zirconium chloride octahydrate","Zirconium-n-propoxide","Acetone","Ethanol","Toluene"];
     const solventNames=new Set(["Pine oil","Acetone","Ethanol","Toluene","Titanium tetrachloride","Titanium (IV) isopropoxide","Acrylonitrile"]);
+    const existingNames=new Set(chemicals.map(x=>String(x.name||"").trim().toLowerCase()));
     for(const name of names){
+      const normalized=name.trim().toLowerCase();
+      if(existingNames.has(normalized)) continue;
       const hash=[...name].reduce((sum,ch)=>sum+ch.charCodeAt(0),0);
       const data={name,formula:"",category:solventNames.has(name)?"Solvent":"Chemical",purchasedDate:`2026-${String((hash%12)+1).padStart(2,"0")}-${String((hash%28)+1).padStart(2,"0")}`,quantity:(hash%41)+5};
       const id=await fsAdd("chemicals",data);
