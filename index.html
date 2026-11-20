@@ -3,49 +3,80 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#143b5d">
   <title>Chemical Library System</title>
   <style>
-    :root {
-      color-scheme: light;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      min-height: 100vh;
-      margin: 0;
-      display: grid;
-      place-items: center;
-      background: linear-gradient(135deg, #eef8f5 0%, #dfeaf7 100%);
-      color: #18332d;
-    }
-
-    main {
-      padding: 3rem;
-      text-align: center;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: clamp(2rem, 6vw, 4.5rem);
-      line-height: 1.1;
-      letter-spacing: -0.03em;
-    }
-
-    p {
-      margin: 1.25rem 0 0;
-      color: #4d6961;
-      font-size: clamp(1.125rem, 2.5vw, 1.5rem);
-    }
+    :root{--navy:#143b5d;--navy2:#1d5078;--blue:#2474a6;--teal:#16857b;--bg:#edf3f6;--line:#d9e2e8;--text:#1d2b36;--muted:#667785;--danger:#ba3a3a;--white:#fff}*{box-sizing:border-box}body{margin:0;font-family:Inter,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--text)}header{background:var(--navy);color:#fff;padding:18px 32px;display:flex;align-items:center;justify-content:space-between}header h1{font-size:20px;margin:0;font-weight:650}.govt{font-size:12px;opacity:.8;text-align:right}.toolbar{background:#fff;border-bottom:1px solid var(--line);padding:14px 32px;display:flex;justify-content:space-between;align-items:center;gap:12px}.actions,.exports{display:flex;gap:8px;flex-wrap:wrap}button{border:1px solid transparent;border-radius:5px;padding:9px 13px;font-weight:650;cursor:pointer;background:#fff;color:var(--text)}button.primary{background:var(--blue);color:#fff}button.secondary{border-color:var(--line)}button.success{background:var(--teal);color:#fff}button.danger{background:var(--danger);color:#fff}main{max-width:1500px;margin:0 auto;padding:22px 32px}.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}.card{background:#fff;border:1px solid var(--line);border-radius:6px;padding:16px}.card span{display:block;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.05em}.card strong{display:block;font-size:25px;margin-top:5px}.table-wrap{background:#fff;border:1px solid var(--line);border-radius:6px;overflow:hidden}.table-title{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between}.table-title h2{font-size:15px;margin:0}.search{border:1px solid var(--line);border-radius:4px;padding:7px 10px;width:230px}table{width:100%;border-collapse:collapse}th{background:#f5f8fa;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:#526470;padding:10px 12px;border-bottom:1px solid var(--line)}td{padding:12px;border-bottom:1px solid #edf1f3;font-size:13px}tbody tr:hover{background:#fafcfd}.empty{text-align:center;color:var(--muted);padding:30px!important}.badge{display:inline-block;padding:4px 8px;border-radius:12px;background:#e8f4fb;color:#24658f;font-size:12px}.status{display:inline-block;width:8px;height:8px;border-radius:50%;background:#dcae30;margin-right:6px}.modal-backdrop{position:fixed;inset:0;background:rgba(11,28,43,.48);display:none;align-items:center;justify-content:center;padding:16px;z-index:10}.modal-backdrop.open{display:flex}.modal{background:#fff;border-radius:7px;width:min(620px,100%);max-height:92vh;overflow:auto}.modal-header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--line)}.modal-header h3{margin:0;font-size:17px}.close{border:0;font-size:22px;background:transparent}.modal-body{padding:20px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field.full{grid-column:1/-1}.field label{display:block;font-size:12px;font-weight:700;margin-bottom:6px}.field input,.field select{width:100%;border:1px solid #bdcad4;border-radius:4px;padding:9px;font:inherit}.modal-footer{display:flex;justify-content:flex-end;gap:8px;padding:14px 20px;border-top:1px solid var(--line);background:#fafbfc}.toast{position:fixed;right:20px;bottom:20px;background:#1f2d38;color:#fff;padding:12px 16px;border-radius:5px;display:none}.toast.show{display:block}.chem-row{display:flex;gap:8px}.chem-row select{flex:1}.chem-row input{width:100px}@media(max-width:800px){header,.toolbar{padding-left:16px;padding-right:16px}.toolbar{align-items:flex-start;flex-direction:column}main{padding:16px}.summary{grid-template-columns:1fr}.table-wrap{overflow-x:auto}table{min-width:850px}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.govt{display:none}}
   </style>
 </head>
 <body>
-  <main>
-    <h1>Chemical Library System</h1>
-    <p>coming soon</p>
-  </main>
+<header><h1>Chemical Library System</h1><div class="govt">Official Inventory Management</div></header>
+<div class="toolbar">
+  <div class="actions"><button class="primary" onclick="openBorrow()">+ Borrow Chemical</button><button class="success" onclick="openReturn()">Return Chemical</button><button class="secondary" id="chemAdmin" onclick="openAdmin()">Manage Chemicals</button></div>
+  <div class="exports"><button class="secondary" onclick="exportPDF()">PDF</button><button class="secondary" onclick="exportCSV()">CSV</button><button class="secondary" onclick="exportExcel()">Excel</button></div>
+</div>
+<main>
+  <section class="summary"><div class="card"><span>Active Borrowers</span><strong id="borrowerCount">0</strong></div><div class="card"><span>Chemicals in Stock</span><strong id="stockCount">0</strong></div><div class="card"><span>Items Currently Borrowed</span><strong id="borrowedCount">0</strong></div></section>
+  <section class="table-wrap"><div class="table-title"><h2>Active Borrowings</h2><input class="search" id="search" placeholder="Search borrower or chemical" oninput="renderBorrows()"></div><table><thead><tr><th>IC No</th><th>Name</th><th>Section</th><th>Designation</th><th>Chemical</th><th>Quantity</th><th>Borrowing Date</th><th>Action</th></tr></thead><tbody id="borrowTable"></tbody></table></section>
+</main>
+
+<div class="modal-backdrop" id="borrowModal"><div class="modal"><div class="modal-header"><h3>Borrow Chemical</h3><button class="close" onclick="closeModal('borrowModal')">×</button></div><form id="borrowForm"><div class="modal-body"><div class="form-grid"><div class="field"><label>IC No *</label><input id="b_ic" required></div><div class="field"><label>Name *</label><input id="b_name" required></div><div class="field"><label>Section *</label><input id="b_section" required></div><div class="field"><label>Designation *</label><input id="b_designation" required></div><div class="field full"><label>Chemical *</label><select id="b_chemical" required></select></div><div class="field"><label>Quantity *</label><input id="b_quantity" type="number" min="1" value="1" required></div><div class="field"><label>Borrowing Date *</label><input id="b_date" type="date" required></div></div></div><div class="modal-footer"><button type="button" class="secondary" onclick="closeModal('borrowModal')">Cancel</button><button class="primary" type="submit">Record Borrowing</button></div></form></div></div>
+
+<div class="modal-backdrop" id="returnModal"><div class="modal"><div class="modal-header"><h3>Return Chemical</h3><button class="close" onclick="closeModal('returnModal')">×</button></div><form id="returnForm"><div class="modal-body"><div class="form-grid"><div class="field full"><label>Select active borrowing *</label><select id="r_borrowing" required></select></div><div class="field"><label>IC No</label><input id="r_ic" readonly></div><div class="field"><label>Name</label><input id="r_name" readonly></div><div class="field"><label>Section</label><input id="r_section" readonly></div><div class="field"><label>Designation</label><input id="r_designation" readonly></div><div class="field full"><label>Chemical</label><input id="r_chemical" readonly></div><div class="field"><label>Return Quantity *</label><input id="r_quantity" type="number" min="1" required></div><div class="field"><label>Return Date *</label><input id="r_date" type="date" required></div></div></div><div class="modal-footer"><button type="button" class="secondary" onclick="closeModal('returnModal')">Cancel</button><button class="success" type="submit">Record Return</button></div></form></div></div>
+
+<div class="modal-backdrop" id="adminModal"><div class="modal" style="width:min(760px,100%)"><div class="modal-header"><h3>Chemical Maintenance</h3><button class="close" onclick="closeModal('adminModal')">×</button></div><div id="loginPanel" class="modal-body"><div class="form-grid"><div class="field"><label>Username</label><input id="adminUser"></div><div class="field"><label>Password</label><input id="adminPass" type="password"></div></div></div><div id="chemicalPanel" style="display:none"><form id="chemicalForm"><div class="modal-body"><div class="form-grid"><div class="field"><label>Name *</label><input id="c_name" required></div><div class="field"><label>Chemical Formula *</label><input id="c_formula" required></div><div class="field"><label>Purchased Date *</label><input id="c_date" type="date" required></div><div class="field"><label>Quantity *</label><input id="c_quantity" type="number" min="0" required></div></div></div><div class="modal-footer"><button type="button" class="secondary" onclick="resetChemicalForm()">Clear</button><button class="primary" type="submit" id="c_submit">Add Chemical</button></div></form><div class="table-wrap" style="border:0;border-top:1px solid var(--line)"><table><thead><tr><th>Name</th><th>Formula</th><th>Purchased</th><th>Quantity</th><th>Action</th></tr></thead><tbody id="chemicalTable"></tbody></table></div></div><div class="modal-footer" id="loginFooter"><button class="secondary" onclick="closeModal('adminModal')">Cancel</button><button class="primary" onclick="adminLogin()">Login</button></div></div></div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+  // Replace these values with the Web app configuration from Firebase Console.
+  const firebaseConfig={apiKey:"",authDomain:"",projectId:"",storageBucket:"",messagingSenderId:"",appId:""};
+  const DEMO=true;
+  // For the demo, credentials are stored in this code as requested. Change them before deployment.
+  const ADMIN_USER="admin";const ADMIN_PASS="chemical123";
+
+  let db=null,editingChemical=null;
+  let chemicals=[{id:"demo1",name:"Hydrochloric Acid",formula:"HCl",purchasedDate:"2026-10-12",quantity:20},{id:"demo2",name:"Sodium Hydroxide",formula:"NaOH",purchasedDate:"2026-09-18",quantity:15},{id:"demo3",name:"Ethanol",formula:"C₂H₅OH",purchasedDate:"2026-08-05",quantity:30}];
+  let personnel=[{id:"demo-p1",icNo:"900101-10-1234",name:"Ahmad bin Rahman",section:"Laboratory A",designation:"Science Officer"}];
+  let borrows=[{id:"demo-b1",personnelId:"demo-p1",icNo:"900101-10-1234",name:"Ahmad bin Rahman",section:"Laboratory A",designation:"Science Officer",chemicalId:"demo1",chemicalName:"Hydrochloric Acid",quantity:5,borrowingDate:"2026-10-15",active:true}];
+  let returns=[];
+
+  async function init(){
+    document.getElementById("b_date").value=new Date().toISOString().slice(0,10);
+    document.getElementById("r_date").value=new Date().toISOString().slice(0,10);
+    if(!DEMO && firebaseConfig.projectId){
+      try{const {initializeApp}=await import("https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js");const {getFirestore}=await import("https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js");db=getFirestore(initializeApp(firebaseConfig));await loadFirebase();}catch(e){toast("Firebase could not be loaded. Using local demo mode.");DEMO_MODE=true}
+    }
+    refreshAll();
+  }
+  async function loadFirebase(){
+    const {collection,getDocs}=await import("https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js");
+    const load=async n=> (await getDocs(collection(db,n))).docs.map(d=>({id:d.id,...d.data()}));
+    chemicals=await load("chemicals");personnel=await load("personnel");borrows=(await load("borrowingRecords")).filter(x=>x.active);returns=await load("returnRecords");
+  }
+  async function fsAdd(name,data){if(!DEMO&&db){const {collection,addDoc}=await import("https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js");const ref=await addDoc(collection(db,name),data);return ref.id}return "local-"+Date.now()}
+  async function fsSet(name,id,data){if(!DEMO&&db){const {doc,setDoc}=await import("https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js");await setDoc(doc(db,name,id),data,{merge:true})}}
+  async function fsDelete(name,id){if(!DEMO&&db){const {doc,deleteDoc}=await import("https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js");await deleteDoc(doc(db,name,id))}}
+
+  function refreshAll(){renderBorrows();renderChemicals();refreshChemicalOptions();refreshSummary()}
+  function refreshSummary(){document.getElementById("borrowerCount").textContent=new Set(borrows.map(x=>x.icNo)).size;document.getElementById("stockCount").textContent=chemicals.reduce((n,x)=>n+(Number(x.quantity)||0),0);document.getElementById("borrowedCount").textContent=borrows.reduce((n,x)=>n+(Number(x.quantity)||0)}
+  function renderBorrows(){const q=document.getElementById("search").value.toLowerCase();const sorted=[...borrows].filter(x=>Object.values(x).join(" ").toLowerCase().includes(q)).sort((a,b)=>a.borrowingDate.localeCompare(b.borrowingDate));document.getElementById("borrowTable").innerHTML=sorted.length?sorted.map(x=>`<tr><td>${esc(x.icNo)}</td><td>${esc(x.name)}</td><td>${esc(x.section)}</td><td>${esc(x.designation)}</td><td>${esc(x.chemicalName)}</td><td><span class="badge">${x.quantity}</span></td><td>${x.borrowingDate}</td><td><button class="secondary" onclick="quickReturn('${x.id}')">Return</button></td></tr>`).join(""):`<tr><td colspan="8" class="empty">No active borrowings found</td></tr>`;refreshSummary()}
+  function refreshChemicalOptions(){const opts=chemicals.map(x=>`<option value="${x.id}">${esc(x.name)} (${esc(x.formula)}) — ${x.quantity} available</option>`).join("");document.getElementById("b_chemical").innerHTML=opts||"<option value='' disabled>No chemicals available</option>"}
+  function renderChemicals(){document.getElementById("chemicalTable").innerHTML=chemicals.length?chemicals.map(x=>`<tr><td>${esc(x.name)}</td><td>${esc(x.formula)}</td><td>${esc(x.purchasedDate)}</td><td>${x.quantity}</td><td><button class="secondary" onclick="editChemical('${x.id}')">Edit</button> <button class="danger" onclick="deleteChemical('${x.id}')">Delete</button></td></tr>`).join(""):`<tr><td colspan="5" class="empty">No chemicals recorded</td></tr>`}
+  window.openBorrow=()=>{document.getElementById("borrowModal").classList.add("open")};window.openReturn=()=>{populateReturnOptions();document.getElementById("returnModal").classList.add("open")};window.openAdmin=()=>{document.getElementById("adminModal").classList.add("open")};window.closeModal=id=>document.getElementById(id).classList.remove("open")
+  document.getElementById("borrowForm").onsubmit=async e=>{e.preventDefault();const chemical=chemicals.find(x=>x.id===document.getElementById("b_chemical").value),q=Number(document.getElementById("b_quantity").value);if(!chemical||q<1||q>Number(chemical.quantity)){toast("Invalid chemical or quantity");return}let person=personnel.find(x=>x.icNo===document.getElementById("b_ic").value);const p={icNo:document.getElementById("b_ic").value,name:document.getElementById("b_name").value,section:document.getElementById("b_section").value,designation:document.getElementById("b_designation").value};if(!person){person={id:await fsAdd("personnel",p),...p};personnel.push(person)}const record={personnelId:person.id,...p,chemicalId:chemical.id,chemicalName:chemical.name,quantity:q,borrowingDate:document.getElementById("b_date").value,active:true};const id=await fsAdd("borrowingRecords",record);borrows.push({id,...record});chemical.quantity=Number(chemical.quantity)-q;await fsSet("chemicals",chemical.id,{quantity:chemical.quantity});refreshAll();closeModal("borrowModal");e.target.reset();toast("Borrowing recorded")}
+  function populateReturnOptions(){const sel=document.getElementById("r_borrowing");sel.innerHTML=borrows.map(x=>`<option value="${x.id}">${esc(x.name)} — ${esc(x.chemicalName)} (${x.quantity})</option>`).join("")||"<option value='' disabled>No active borrowings</option>";populateReturnFields()}
+  function populateReturnFields(){const b=borrows.find(x=>x.id===document.getElementById("r_borrowing").value);if(!b)return;document.getElementById("r_ic").value=b.icNo;document.getElementById("r_name").value=b.name;document.getElementById("r_section").value=b.section;document.getElementById("r_designation").value=b.designation;document.getElementById("r_chemical").value=b.chemicalName;document.getElementById("r_quantity").max=b.quantity;document.getElementById("r_quantity").value=b.quantity}document.getElementById("r_borrowing").onchange=populateReturnFields;
+  window.quickReturn=id=>{openReturn();document.getElementById("r_borrowing").value=id;populateReturnFields()}
+  document.getElementById("returnForm").onsubmit=async e=>{e.preventDefault();const b=borrows.find(x=>x.id===document.getElementById("r_borrowing").value),q=Number(document.getElementById("r_quantity").value);if(!b||q<1||q>b.quantity){toast("Invalid return quantity");return}const record={personnelId:b.personnelId,icNo:b.icNo,name:b.name,section:b.section,designation:b.designation,chemicalId:b.chemicalId,chemicalName:b.chemicalName,quantity:q,returnDate:document.getElementById("r_date").value,borrowingRecordId:b.id};await fsAdd("returnRecords",record);returns.push(record);const chemical=chemicals.find(x=>x.id===b.chemicalId);if(chemical){chemical.quantity=Number(chemical.quantity)+q;await fsSet("chemicals",chemical.id,{quantity:chemical.quantity})}b.quantity-=q;if(b.quantity===0){b.active=false;await fsSet("borrowingRecords",b.id,{active:false,quantity:0})}else await fsSet("borrowingRecords",b.id,{quantity:b.quantity});borrows=borrows.filter(x=>x.active);refreshAll();closeModal("returnModal");toast("Return recorded")}
+  window.adminLogin=()=>{if(document.getElementById("adminUser").value===ADMIN_USER&&document.getElementById("adminPass").value===ADMIN_PASS){document.getElementById("loginPanel").style.display="none";document.getElementById("loginFooter").style.display="none";document.getElementById("chemicalPanel").style.display="block";renderChemicals()}else toast("Invalid username or password")}
+  document.getElementById("chemicalForm").onsubmit=async e=>{e.preventDefault();const data={name:document.getElementById("c_name").value,formula:document.getElementById("c_formula").value,purchasedDate:document.getElementById("c_date").value,quantity:Number(document.getElementById("c_quantity").value)};if(editingChemical){Object.assign(editingChemical,data);await fsSet("chemicals",editingChemical.id,data)}else{const id=await fsAdd("chemicals",data);chemicals.push({id,...data})}resetChemicalForm();refreshAll();toast("Chemical saved")}
+  window.resetChemicalForm=()=>{editingChemical=null;document.getElementById("chemicalForm").reset();document.getElementById("c_submit").textContent="Add Chemical"};window.editChemical=id=>{editingChemical=chemicals.find(x=>x.id===id);document.getElementById("c_name").value=editingChemical.name;document.getElementById("c_formula").value=editingChemical.formula;document.getElementById("c_date").value=editingChemical.purchasedDate;document.getElementById("c_quantity").value=editingChemical.quantity;document.getElementById("c_submit").textContent="Update Chemical"};window.deleteChemical=async id=>{if(!confirm("Delete this chemical? Transaction history will be retained."))return;await fsDelete("chemicals",id);chemicals=chemicals.filter(x=>x.id!==id);refreshAll();toast("Chemical deleted")}
+
+  function exportRows(){return [...borrows].sort((a,b)=>a.borrowingDate.localeCompare(b.borrowingDate)).map(x=>({"IC No":x.icNo,Name:x.name,Section:x.section,Designation:x.designation,Chemical:x.chemicalName,Quantity:x.quantity,"Borrowing Date":x.borrowingDate}))}
+  window.exportCSV=()=>{const rows=exportRows();download("borrowers.csv",toCSV(rows),"text/csv;charset=utf-8")};window.exportExcel=()=>{const rows=exportRows();const table=`<table><tr>${Object.keys(rows[0]||{IC:""}).map(k=>`<th>${k}</th>`).join("")}</tr>${rows.map(r=>`<tr>${Object.values(r).map(v=>`<td>${esc(v)}</td>`).join("")}</tr>`).join("")}</table>`;download("borrowers.xls",`<html><body>${table}</body></html>`,"application/vnd.ms-excel")};window.exportPDF=()=>{const w=window.open("","_blank");const rows=exportRows();w.document.write(`<html><head><title>Active Borrowers</title><style>body{font-family:Arial;font-size:12px}h1{font-size:18px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #999;padding:6px;text-align:left}th{background:#eee}@media print{button{display:none}}</style></head><body><h1>Active Borrowers</h1><button onclick="window.print()">Print / Save as PDF</button><table><tr>${Object.keys(rows[0]||{IC:""}).map(k=>`<th>${k}</th>`).join("")}</tr>${rows.map(r=>`<tr>${Object.values(r).map(v=>`<td>${esc(v)}</td>`).join("")}</tr>`).join("")}</table></body></html>`);w.document.close()}
+  function toCSV(rows){if(!rows.length)return "";const headers=Object.keys(rows[0]);return [headers.join(","),...rows.map(r=>headers.map(h=>`"${String(r[h]).replace(/"/g,'""')}"`).join(","))].join("\n")}function download(name,text,type){const blob=new Blob([text],{type}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();URL.revokeObjectURL(a.href)}function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2600)}function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c]))}
+  init();
+</script>
 </body>
 </html>
