@@ -49,6 +49,6 @@ This rule is a starting point; restrict each collection to an appropriate role b
 
 The public site is published from the `gh-pages` branch:
 
-- https://mohanram123.github.io/chemical-library-system/
+- [Chemical Library System](https://mohanram123.github.io/chemical-library-system/)
 
 After changing files on `master`, copy `index.html` and commit it to `gh-pages`, then push that branch.
