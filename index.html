@@ -30,8 +30,8 @@
 
 <script type="module">
   // Replace these values with the Web app configuration from Firebase Console.
-  const firebaseConfig={apiKey:"",authDomain:"",projectId:"",storageBucket:"",messagingSenderId:"",appId:""};
-  const DEMO=true;
+  const firebaseConfig={apiKey:"AIzaSyBBdGG5_SXlRLx9XG_Af424WDYjByWcoLI",authDomain:"chemical-library-system-ncss.firebaseapp.com",projectId:"chemical-library-system-ncss",storageBucket:"chemical-library-system-ncss.firebasestorage.app",messagingSenderId:"728302284557",appId:"1:728302284557:web:9df7aa337c57dd0ea00a44",measurementId:"G-KL7KFZ4Z28"};
+  const DEMO=false;
   // For the demo, credentials are stored in this code as requested. Change them before deployment.
   const ADMIN_USER="admin";const ADMIN_PASS="chemical123";
 
@@ -45,18 +45,26 @@
     document.getElementById("b_date").value=new Date().toISOString().slice(0,10);
     document.getElementById("r_date").value=new Date().toISOString().slice(0,10);
     if(!DEMO && firebaseConfig.projectId){
-      try{const {initializeApp}=await import("https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js");const {getFirestore}=await import("https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js");db=getFirestore(initializeApp(firebaseConfig));await loadFirebase();}catch(e){toast("Firebase could not be loaded. Using local demo mode.");DEMO_MODE=true}
+      try{
+        const {initializeApp}=await import("https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js");
+        const {getAnalytics,isSupported}=await import("https://www.gstatic.com/firebasejs/13.4.0/firebase-analytics.js");
+        const {getFirestore}=await import("https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js");
+        const app=initializeApp(firebaseConfig);
+        db=getFirestore(app);
+        if(await isSupported()) getAnalytics(app);
+        await loadFirebase();
+      }catch(e){toast("Firebase could not be loaded. Check Firestore rules and network access.");console.error(e)}
     }
     refreshAll();
   }
   async function loadFirebase(){
-    const {collection,getDocs}=await import("https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js");
+    const {collection,getDocs}=await import("https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js");
     const load=async n=> (await getDocs(collection(db,n))).docs.map(d=>({id:d.id,...d.data()}));
     chemicals=await load("chemicals");personnel=await load("personnel");borrows=(await load("borrowingRecords")).filter(x=>x.active);returns=await load("returnRecords");
   }
-  async function fsAdd(name,data){if(!DEMO&&db){const {collection,addDoc}=await import("https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js");const ref=await addDoc(collection(db,name),data);return ref.id}return "local-"+Date.now()}
-  async function fsSet(name,id,data){if(!DEMO&&db){const {doc,setDoc}=await import("https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js");await setDoc(doc(db,name,id),data,{merge:true})}}
-  async function fsDelete(name,id){if(!DEMO&&db){const {doc,deleteDoc}=await import("https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js");await deleteDoc(doc(db,name,id))}}
+  async function fsAdd(name,data){if(!DEMO&&db){const {collection,addDoc}=await import("https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js");const ref=await addDoc(collection(db,name),data);return ref.id}return "local-"+Date.now()}
+  async function fsSet(name,id,data){if(!DEMO&&db){const {doc,setDoc}=await import("https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js");await setDoc(doc(db,name,id),data,{merge:true})}}
+  async function fsDelete(name,id){if(!DEMO&&db){const {doc,deleteDoc}=await import("https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js");await deleteDoc(doc(db,name,id))}}
 
   function refreshAll(){renderBorrows();renderChemicals();refreshChemicalOptions();refreshSummary()}
   function refreshSummary(){document.getElementById("borrowerCount").textContent=new Set(borrows.map(x=>x.icNo)).size;document.getElementById("stockCount").textContent=chemicals.reduce((n,x)=>n+(Number(x.quantity)||0),0);document.getElementById("borrowedCount").textContent=borrows.reduce((n,x)=>n+(Number(x.quantity)||0),0)}
