@@ -17,7 +17,7 @@
 </div>
 <main>
   <section class="summary"><div class="card"><span>Active Borrowers</span><strong id="borrowerCount">0</strong></div><div class="card"><span>Chemicals in Stock</span><strong id="stockCount">0</strong></div><div class="card"><span>Items Currently Borrowed</span><strong id="borrowedCount">0</strong></div></section>
-  <section class="table-wrap"><div class="table-title"><h2>Low Stock — Chemicals & Solvents</h2><span class="badge">Threshold: 10 or less</span></div><table><thead><tr><th>Category</th><th>Name</th><th>Chemical Formula</th><th>Available Quantity</th></tr></thead><tbody id="lowStockTable"></tbody></table></section>
+  <section class="table-wrap"><div class="table-title"><h2>Low Stock — Chemicals & Solvents</h2><span class="badge">Threshold: 10 or less</span></div><div class="inventory-tabs"><button class="inventory-tab active" id="lowChemicalTab" onclick="setLowStockCategory('Chemical')">Chemicals</button><button class="inventory-tab" id="lowSolventTab" onclick="setLowStockCategory('Solvent')">Solvents</button></div><table><thead><tr><th>Name</th><th>Chemical Formula</th><th>Available Quantity</th></tr></thead><tbody id="lowStockTable"></tbody></table></section>
   <section class="table-wrap" style="margin-top:16px"><div class="table-title"><h2>Available Chemicals & Solvents</h2><input class="search" id="inventorySearch" placeholder="Search inventory" oninput="setInventorySearch()"></div><div class="inventory-tabs"><button class="inventory-tab active" id="chemicalTab" onclick="setInventoryCategory('Chemical')">Chemicals</button><button class="inventory-tab" id="solventTab" onclick="setInventoryCategory('Solvent')">Solvents</button></div><table><thead><tr><th>Name</th><th>Chemical Formula</th><th>Purchased Date</th><th>Available Quantity</th></tr></thead><tbody id="inventoryTable"></tbody></table><div class="pagination"><button class="secondary" id="inventoryPrev" onclick="changeInventoryPage(-1)">Previous</button><span class="page-status" id="inventoryPageStatus"></span><button class="secondary" id="inventoryNext" onclick="changeInventoryPage(1)">Next</button></div></section>
   <section class="table-wrap" style="margin-top:16px"><div class="table-title"><h2>Active Borrowings</h2><input class="search" id="search" placeholder="Search borrower or chemical"></div><table><thead><tr><th>IC No</th><th>Name</th><th>Section</th><th>Designation</th><th>Chemical</th><th>Quantity</th><th>Borrowing Date</th><th>Action</th></tr></thead><tbody id="borrowTable"></tbody></table></section>
 </main>
@@ -39,6 +39,7 @@
 
   let db=null,editingChemical=null;
   let inventoryCategory="Chemical";
+  let lowStockCategory="Chemical";
   let inventoryPage=1;
   const inventoryPageSize=10;
   let chemicals=[{id:"demo1",name:"Hydrochloric Acid",formula:"HCl",purchasedDate:"2026-10-12",quantity:20},{id:"demo2",name:"Sodium Hydroxide",formula:"NaOH",purchasedDate:"2026-09-18",quantity:15},{id:"demo3",name:"Ethanol",formula:"C₂H₅OH",purchasedDate:"2026-08-05",quantity:30}];
@@ -67,7 +68,7 @@
     const load=async n=> (await getDocs(collection(db,n))).docs.map(d=>({id:d.id,...d.data()}));
     chemicals=await load("chemicals");
     await seedImportedInventory();
-    personnel=await load("personnel");borrows=(await load("borrowingRecords")).filter(x=>x.active);returns=await load("returnRecords");
+    personnel=await load("personnel");borrows=(await load("borrowingRecords")).filter(x=>x.active!==false);returns=await load("returnRecords");
   }
 
   async function seedImportedInventory(){
@@ -91,9 +92,19 @@
   function refreshSummary(){document.getElementById("borrowerCount").textContent=new Set(borrows.map(x=>x.icNo)).size;document.getElementById("stockCount").textContent=chemicals.reduce((n,x)=>n+(Number(x.quantity)||0),0);document.getElementById("borrowedCount").textContent=borrows.reduce((n,x)=>n+(Number(x.quantity)||0),0)}
 
   function refreshLowStock(){
-    const low=[...chemicals].filter(x=>Number(x.quantity)<=10).sort((a,b)=>Number(a.quantity)-Number(b.quantity)||String(a.name).localeCompare(String(b.name)));
-    document.getElementById("lowStockTable").innerHTML=low.length?low.map(x=>`<tr><td><span class="badge">${esc(x.category||"Chemical")}</span></td><td>${esc(x.name)}</td><td>${esc(x.formula||"—")}</td><td><strong>${x.quantity}</strong></td></tr>`).join(""):`<tr><td colspan="4" class="empty">No low-stock items</td></tr>`;
+    const low=[...chemicals]
+      .filter(x=>(x.category||"Chemical")===lowStockCategory)
+      .filter(x=>Number(x.quantity)<=10)
+      .sort((a,b)=>Number(a.quantity)-Number(b.quantity)||String(a.name).localeCompare(String(b.name)));
+    document.getElementById("lowStockTable").innerHTML=low.length?low.map(x=>`<tr><td>${esc(x.name)}</td><td>${esc(x.formula||"—")}</td><td><strong>${x.quantity}</strong></td></tr>`).join(""):`<tr><td colspan="3" class="empty">No low-stock ${lowStockCategory.toLowerCase()}s</td></tr>`;
   }
+
+  window.setLowStockCategory=category=>{
+    lowStockCategory=category;
+    document.getElementById("lowChemicalTab").classList.toggle("active",category=== "Chemical");
+    document.getElementById("lowSolventTab").classList.toggle("active",category=== "Solvent");
+    refreshLowStock();
+  };
 
   function getInventoryRows(){
     const q=(document.getElementById("inventorySearch")?.value||"").toLowerCase().normalize("NFKC").trim();
